@@ -315,7 +315,7 @@ class MainWindow(QMainWindow):
     def load_via_stack_json(self):
         from urllib.request import urlopen
 
-        with urlopen("https://github.com/vial-kb/via-keymap-precompiled/raw/main/via_keyboard_stack.json") as resp:
+        with urlopen("https://github.com/WestBerryVIA/via-keymap-precompiled/raw/main/via_keyboard_stack.json") as resp:
             data = resp.read()
         self.autorefresh.load_via_stack(data)
         # write to cache
