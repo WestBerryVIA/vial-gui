@@ -11,7 +11,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -127,7 +127,7 @@ jobs:
         path: target\VialSetup.exe
   publish_release:
     name: Publish (Release)
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     needs: [build-win, build-mac, build-linux]
 
@@ -148,7 +148,7 @@ jobs:
             ./vial-linux/Vial-x86_64.AppImage
   publish_beta:
       name: Publish (Beta)
-      runs-on: ubuntu-18.04
+      runs-on: ubuntu-latest
 
       needs: [build-win, build-mac, build-linux]
 
