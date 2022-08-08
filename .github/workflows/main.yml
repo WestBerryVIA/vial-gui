@@ -1,6 +1,13 @@
 name: CI
 
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - published
+  pull_request:
 
 jobs:
   build-linux:
@@ -41,7 +48,7 @@ jobs:
         path: out/Vial-x86_64.AppImage
 
   build-mac:
-    runs-on: macos-10.15
+    runs-on: macos-11
     env:
       PYTHON_VERSION: 3.6.8
       MACOSX_DEPLOYMENT_TARGET: 10.9
@@ -118,3 +125,46 @@ jobs:
       with:
         name: vial-win-installer
         path: target\VialSetup.exe
+  publish_release:
+    name: Publish (Release)
+    runs-on: ubuntu-18.04
+
+    needs: [build-win, build-mac, build-linux]
+
+    if: github.event.release.tag_name
+
+    steps:
+      - uses: actions/download-artifact@v3
+
+      - uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: ${{ github.event.release.name }}
+          files: |
+            ./vial-win/vial-win.zip
+            ./vial-win-installer/VialSetup.exe
+            ./vial-mac/vial-mac.dmg
+            ./vial-linux/Vial-x86_64.AppImage
+  publish_beta:
+      name: Publish (Beta)
+      runs-on: ubuntu-18.04
+
+      needs: [build-win, build-mac, build-linux]
+
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+      steps:
+        - uses: actions/download-artifact@v3
+
+        - uses: marvinpinto/action-automatic-releases@latest
+          with:
+            repo_token: "${{ secrets.GITHUB_TOKEN }}"
+            automatic_release_tag: "beta"
+            prerelease: true
+            title: "Latest Beta"
+            files: |
+              ./vial-win/vial-win.zip
+              ./vial-win-installer/VialSetup.exe
+              ./vial-mac/vial-mac.dmg
+              ./vial-linux/Vial-x86_64.AppImage
